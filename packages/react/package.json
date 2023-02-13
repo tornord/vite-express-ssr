@@ -9,6 +9,7 @@
     "start": "NODE_ENV=production node --experimental-specifier-resolution=node app.js",
     "lint": "eslint .",
     "test": "jest",
+    "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --outDir dist/server --ssr src/entry-server.jsx"
   },

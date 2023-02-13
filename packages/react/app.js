@@ -1,15 +1,12 @@
+import { resolveContent, setViteDevServer } from "./lib/routes/resolveContent";
 import express from "express";
-import { fileURLToPath } from "node:url";
-import fs from "node:fs";
-import path from "node:path";
+import { resolve } from "node:path";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = 3001;
 const isTest = process.env.VITEST;
 
-export async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV === "production", hmrPort) {
-  const resolve = (p) => path.resolve(__dirname, p);
-  const indexProd = isProd ? fs.readFileSync(resolve("dist/client/index.html"), "utf-8") : "";
+export async function createServer(root = process.cwd(), hmrPort) {
+  const isProd = process.env.NODE_ENV === "production";
   const app = express();
 
   /**
@@ -38,6 +35,7 @@ export async function createServer(root = process.cwd(), isProd = process.env.NO
     });
     // use vite's connect instance as middleware
     app.use(vite.middlewares);
+    setViteDevServer(vite);
   } else {
     app.use((await import("compression")).default());
     app.use(
@@ -47,41 +45,7 @@ export async function createServer(root = process.cwd(), isProd = process.env.NO
     );
   }
 
-  app.use("*", async (req, res) => {
-    try {
-      const url = req.originalUrl;
-
-      let template, render;
-      if (!isProd) {
-        // always read fresh template in dev
-        template = fs.readFileSync(resolve("./index.html"), "utf-8");
-        template = await vite.transformIndexHtml(url, template);
-        render = (await vite.ssrLoadModule("/src/entry-server.jsx")).render;
-      } else {
-        template = indexProd;
-        // @ts-ignore
-        render = (await import("./dist/server/entry-server.js")).render;
-      }
-
-      const context = {};
-      const appHtml = render(url, context);
-
-      if (context.url) {
-        // Somewhere a `<Redirect>` was rendered
-        return res.redirect(301, context.url);
-      }
-
-      const html = template.replace("<!--app-html-->", appHtml);
-
-      res.status(200).set({ "Content-Type": "text/html" }).end(html);
-    } catch (e) {
-      if (!isProd) {
-        vite.ssrFixStacktrace(e);
-      }
-      console.log(e.stack); // eslint-disable-line
-      res.status(500).end(e.stack);
-    }
-  });
+  app.use("*", resolveContent);
 
   return { app, vite };
 }
