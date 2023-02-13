@@ -14,9 +14,6 @@ export async function resolveContent(req, res, next) {
 
     let template, render;
     if (!isProd) {
-      // always read fresh template in dev
-      // template = fs.readFileSync(resolve("./index.html"), "utf-8");
-      // template = await viteDevServer.transformIndexHtml(url, template);
       template = (await viteDevServer.ssrLoadModule("./lib/index")).default;
       template(req, res, (err) => {
         if (err) {
