@@ -26,9 +26,12 @@
   "dependencies": {
     "compression": "^1.7.4",
     "dotenv": "^16.0.3",
+    "exp-config": "^4.2.0",
     "express": "^4.18.2",
+    "express-winston": "^4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.1"
+    "react-router-dom": "^6.8.1",
+    "winston": "^3.8.2"
   }
 }

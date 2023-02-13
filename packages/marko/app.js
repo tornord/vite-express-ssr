@@ -1,54 +1,36 @@
+import { resolveContent, setViteDevServer } from "./lib/routes/resolveContent";
 import config from "exp-config";
-import express from "express";
-// import expressWinston from "express-winston";
+import { createServer as createViteDevServer } from "vite";
+import { fileURLToPath } from "url";
 import fs from "node:fs";
-import { join, resolve } from "node:path";
-
-// import http from "http";
-// import https from "https";
-// import markoMiddleware from "@marko/express";
-import { createServer as createViteServer } from "vite";
-
 import logger from "./lib/logger.js";
+import process from "process";
 import setupApp from "./lib/init/setupApp.js";
 
-const isProd = process.env.NODE_ENV === "production";
-const port = Number(process.env.PORT) || 3000;
-
 const packageInfo = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
-const publicCat = resolve(".", "public", "static");
-// console.log("setupApp",isProd)
+const app = setupApp();
 
-(async () => {
-  const app = setupApp();
+async function main() {
+  const isProd = process.env.NODE_ENV === "production";
+  const port = Number(process.env.PORT) || 3000;
 
-  if (isProd) {
-    app
-      .use("/assets", express.static(join(publicCat, "assets"))) // Serve assets generated from vite.
-      // .use(fs.readdirSync("./dist"));
-  } else {
-    const devServer = await createViteServer({
+  if (!isProd) {
+    const devServer = await createViteDevServer({
       server: { middlewareMode: true },
       appType: "custom",
+      hmr: { port: port + 174 },
     });
     app.use(devServer.middlewares);
-    app.use(async (req, res, next) =>
-      (await devServer.ssrLoadModule("./lib/index")).default(req, res, (err) => {
-        if (err) {
-          devServer.ssrFixStacktrace(err);
-          next(err);
-        } else {
-          next();
-        }
-      })
-    );
+    setViteDevServer(devServer);
+  } else {
+    app.use((await import("compression")).default());
+    // app.use("/assets", express.static(join(publicCat, "assets"))); // Serve assets generated from vite.
+    // .use(fs.readdirSync("./dist"));
   }
 
-  const server = app.listen(port, (err) => {
-    if (err) {
-      throw err;
-    }
+  app.use("*", resolveContent);
 
+  const server = app.listen(port, () => {
     logger.info(
       `%s ${config.REVISION ? `(revision=${config.REVISION}) ` : ""}listening on port %d`,
       packageInfo.name,
@@ -72,4 +54,8 @@ const publicCat = resolve(".", "public", "static");
   });
 
   process.on("exit", exitHandler);
-})();
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}

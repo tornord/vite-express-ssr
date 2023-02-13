@@ -20,7 +20,7 @@
       "request": "launch",
       "name": "run prod app",
       "skipFiles": ["<node_internals>/**"],
-      "args": ["--experimental-specifier-resolution=node", "app.js"],
+      "args": ["--experimental-specifier-resolution=node", "dist/app.js"],
       "env": { "NODE_ENV": "production" },
       "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.12.1/bin/node",
       "console": "integratedTerminal"
