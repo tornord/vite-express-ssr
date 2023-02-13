@@ -1,0 +1,14 @@
+import customScript from "./customScript.js";
+import customMarko from "./customMarko.marko";
+
+<app-layout>
+  <@head>
+    <title>Test App</title>
+  </@head>
+  <@body>
+  <p>${customScript()}</p>
+  <h1>Hello from Marko!</h1>
+  <customMarko/>
+  <my-template />
+  </@body>
+</app-layout>
