@@ -1,12 +1,12 @@
 import expressWinston from "express-winston";
 import http from "http";
 import https from "https";
-import markoMiddleware from "@marko/express";
 import express from "express";
 import logger from "../logger";
 import { middleware } from "./middleware";
+import { resolveContent } from "../routes/resolveContent";
 
-export default function setupApp() {
+export function setupApp() {
   // AWS.config.update({
   //   region: "eu-west-1",
   //   credentials: {
@@ -15,7 +15,7 @@ export default function setupApp() {
   //   },
   // });
   const app = express();
-  app.use(markoMiddleware()); // Kommer antagligen komma en ny release som löser det här
+  // app.use(markoMiddleware()); // Kommer antagligen komma en ny release som löser det här
 
   // eslint-disable-next-line no-new
   https.globalAgent = new https.Agent({ keepAlive: true, maxSockets: Infinity, timeout: 20000 });
@@ -29,6 +29,7 @@ export default function setupApp() {
   // app.use(routes);
   setupErrorLogging(app);
   // app.use(errorHandler);
+  app.use("*", resolveContent);
 
   return app;
 }

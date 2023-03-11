@@ -1,34 +1,26 @@
-import { resolveContent, setViteDevServer } from "./lib/routes/resolveContent";
+import { readFileSync } from "fs";
 import config from "exp-config";
-import { createServer as createViteDevServer } from "vite";
 import { fileURLToPath } from "url";
-import fs from "node:fs";
 import logger from "./lib/logger.js";
 import process from "process";
-import setupApp from "./lib/init/setupApp.js";
+import { setupApp } from "./lib/init/setupApp.js";
+import { setupViteDevServer } from "./lib/init/viteDevServer";
 
-const packageInfo = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
+process.env.MARKO_CONFIG = JSON.stringify({ writeToDisk: false });
+
+const packageInfo = JSON.parse(readFileSync("./package.json", "utf-8"));
 const app = setupApp();
 
 async function main() {
-  const isProd = process.env.NODE_ENV === "production";
   const port = Number(process.env.PORT) || 3000;
 
-  if (!isProd) {
-    const devServer = await createViteDevServer({
-      server: { middlewareMode: true },
-      appType: "custom",
-      hmr: { port: port + 174 },
-    });
-    app.use(devServer.middlewares);
-    setViteDevServer(devServer);
+  if (process.env.NODE_ENV === "development") {
+    await setupViteDevServer(app);
   } else {
     app.use((await import("compression")).default());
     // app.use("/assets", express.static(join(publicCat, "assets"))); // Serve assets generated from vite.
     // .use(fs.readdirSync("./dist"));
   }
-
-  app.use("*", resolveContent);
 
   const server = app.listen(port, () => {
     logger.info(

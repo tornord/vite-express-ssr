@@ -1,10 +1,13 @@
-import { loadTemplate, viteDevServer } from "../init/viteDevServer";
+import { viteDevServer } from "../init/viteDevServer";
 
-let templateImporter = () => import("../../views/index/template.marko");
+let loadTemplate = () => import("../../views/index/template.marko");
 
 export async function resolveContent(req, res, next) {
   try {
-    const template = await loadTemplate(templateImporter);
+    if (viteDevServer) {
+      loadTemplate = () => viteDevServer.ssrLoadModule("views/index/template.marko");
+    }
+    const template = (await loadTemplate()).default;
     const viewModel = {};
     template.renderToString(viewModel, (err, html) => {
       if (err) {

@@ -10,19 +10,43 @@
       "name": "run dev app",
       "skipFiles": ["<node_internals>/**"],
       "args": ["--experimental-specifier-resolution=node", "app.js"],
-      "env": {},
-      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.12.1/bin/node",
+      "env": { "NODE_ENV": "development" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     },
     {
       "type": "node",
+      "name": "vitest",
       "request": "launch",
-      "name": "run prod app",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["${file}", "--run"],
       "skipFiles": ["<node_internals>/**"],
-      "args": ["--experimental-specifier-resolution=node", "dist/app.js"],
+      "env": { "NODE_ENV": "test" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "name": "run prod app",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/dist/app.js",
+      "args": ["${file}", "--run"],
+      "skipFiles": ["<node_internals>/**"],
       "env": { "NODE_ENV": "production" },
-      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.12.1/bin/node",
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "name": "run dev app",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.js",
+      "args": ["--enable-source-maps", "--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": { "NODE_ENV": "development" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
       "console": "integratedTerminal"
     }
   ]

@@ -14,7 +14,7 @@ let isTest = true;
 
 async function main() {
   const isProd = process.env.NODE_ENV === "production";
-  const port = Number(process.env.PORT) || 3001;
+  const port = Number(process.env.PORT) || 3000;
 
   let devServer;
   if (!isProd) {
@@ -29,7 +29,7 @@ async function main() {
           usePolling: true,
           interval: 100,
         },
-        hmr: { port: port + 174 },
+        hmr: { port: 5174 },
       },
       appType: "custom",
     });
