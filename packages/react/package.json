@@ -21,6 +21,7 @@
     "eslint": "^8.30.0",
     "jest": "^29.3.1",
     "vite": "^4.1.1",
+    "vite-plugin-inspect": "^0.7.16",
     "vitest": "^0.28.4"
   },
   "dependencies": {

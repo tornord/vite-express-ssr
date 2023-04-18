@@ -1,0 +1,53 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "run dev app",
+      "skipFiles": ["<node_internals>/**"],
+      "args": ["--experimental-specifier-resolution=node", "app.js"],
+      "env": { "NODE_ENV": "development" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "name": "vitest",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["${file}", "--run"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": { "NODE_ENV": "test" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "name": "run prod app",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/dist/app.js",
+      "args": ["${file}", "--run"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": { "NODE_ENV": "production" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "name": "run dev app",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.js",
+      "args": ["--enable-source-maps", "--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": { "NODE_ENV": "development" },
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v18.14.1/bin/node",
+      "console": "integratedTerminal"
+    }
+  ]
+}
